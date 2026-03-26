@@ -636,6 +636,31 @@ input[type="number"].data-input::-webkit-inner-spin-button {
   line-height: 1.5;
 }
 
+/* ── APP FOOTER ── */
+.app-footer {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  margin-top: 3rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.app-footer a {
+  text-decoration: none;
+}
+.app-footer-text {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+}
+.app-footer-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--gold);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 /* ── DIVIDER ── */
 .section-divider {
   width: 48px;
@@ -961,9 +986,13 @@ input[type="number"].data-input::-webkit-inner-spin-button {
 
     <p class="final-line">Not responsible for the whole organization?<br>Send this to whoever is. They need to see this number before it effects the whole team.</p>
 
-    <p style="text-align:center; margin-top: 2.5rem; opacity: 0.4;">
-      <img src="https://cdn.prod.website-files.com/6530054d8f0a88aa816fcc50/653025f2b97d2c5940bf1bd9_sightShiftLogo-rev.svg" alt="SightShift" style="width: 100px;">
-    </p>
+    <div class="app-footer">
+      <a href="https://www.sightshift.com" target="_blank" rel="noopener">
+        <img src="https://cdn.prod.website-files.com/6530054d8f0a88aa816fcc50/653025f2b97d2c5940bf1bd9_sightShiftLogo-rev.svg" alt="SightShift" style="width: 110px;">
+      </a>
+      <p class="app-footer-text">We develop leaders who develop leaders so you can build a culture that changes lives.</p>
+      <a href="https://www.sightshift.com" class="app-footer-link" target="_blank" rel="noopener">Explore SightShift →</a>
+    </div>
   </div>
 </div>
 
@@ -1478,6 +1507,18 @@ function sendShare() {
 
   document.getElementById('shareSent').style.display = 'block';
   emailEl.value = '';
+  // Flash the send button to confirm
+  var sendBtn = emailEl.parentElement.querySelector('button');
+  if (sendBtn) {
+    sendBtn.textContent = 'Sent!';
+    sendBtn.style.background = 'var(--gold)';
+    sendBtn.style.color = 'var(--navy)';
+    setTimeout(function() {
+      sendBtn.textContent = 'Send';
+      sendBtn.style.background = '';
+      sendBtn.style.color = '';
+    }, 2000);
+  }
 }
 
 // Allow Enter key on intro form
