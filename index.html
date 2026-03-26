@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SightShift Validation Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #1B3233;
+  --navy-light: #243E3F;
+  --navy-dark: #121F20;
+  --gold: #CEA42C;
+  --gold-hover: #DDB63E;
+  --white: #FFFFFF;
+  --gray-light: #B8C8C9;
+  --gray-mid: #7A8E8F;
+  --text: #E8EDEE;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 2rem 1.25rem;
+  max-width: 480px;
+  margin: 0 auto;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ── INTRO SCREEN ── */
+#intro {
+  text-align: center;
+  gap: 1.5rem;
+}
+
+#intro h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+#intro .subhead {
+  font-size: 1.05rem;
+  color: var(--gray-light);
+  margin-top: -0.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  background: var(--navy-light);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input::placeholder {
+  color: var(--gray-mid);
+}
+
+.form-group input:focus {
+  border-color: var(--gold);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1.1rem 2rem;
+  background: var(--gold);
+  color: var(--navy-dark);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary:hover { background: var(--gold-hover); }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fine-print {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  margin-top: -0.25rem;
+}
+
+/* ── QUESTION SCREEN ── */
+#question-screen {
+  gap: 2rem;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--gray-mid);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  margin-bottom: 0.5rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn:hover { color: var(--white); }
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.question-container {
+  position: relative;
+  min-height: 380px;
+}
+
+.question-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.question-card.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  position: relative;
+}
+
+.question-card.exit-left {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.question-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.35;
+  margin-bottom: 1.5rem;
+}
+
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.answer-btn {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--navy-light);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.answer-btn:hover {
+  border-color: var(--gold);
+  background: rgba(206, 164, 44, 0.08);
+}
+
+.answer-btn:active {
+  transform: scale(0.98);
+}
+
+.answer-btn.selected {
+  border-color: var(--gold);
+  background: rgba(206, 164, 44, 0.15);
+}
+
+.data-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  background: var(--navy-light);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.data-input:focus {
+  border-color: var(--gold);
+}
+
+select.data-input {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237A8E8F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+input[type="number"].data-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* ── RESULTS SCREEN ── */
+#results-screen {
+  display: none;
+  padding: 2rem 1.25rem 3rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#results-screen.active {
+  display: block;
+}
+
+.results-section {
+  margin-bottom: 3rem;
+}
+
+.result-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+
+.result-headline {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.25;
+  margin-bottom: 1rem;
+}
+
+.result-body {
+  font-size: 1.05rem;
+  color: var(--gray-light);
+  line-height: 1.6;
+}
+
+.result-signs {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sign-line {
+  font-size: 0.95rem;
+  color: var(--gray-light);
+  line-height: 1.5;
+  padding-left: 1rem;
+  border-left: 2px solid var(--gold);
+}
+
+.bridging {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.bridging p {
+  font-size: 1.1rem;
+  color: var(--white);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* ── CALCULATOR ── */
+.calc-section {
+  background: var(--navy-light);
+  border-radius: 16px;
+  padding: 1.75rem 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.calc-section h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+
+.calc-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.calc-field label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--gray-light);
+  margin-bottom: 0.4rem;
+}
+
+.calc-field input,
+.calc-field select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: var(--navy);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.calc-field select {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237A8A9A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.calc-field input:focus,
+.calc-field select:focus {
+  border-color: var(--gold);
+}
+
+.calc-field input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.cost-results {
+  display: none;
+}
+
+.cost-results.visible {
+  display: block;
+}
+
+.cost-card {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.cost-card:last-of-type {
+  border-bottom: none;
+}
+
+.cost-figure {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.cost-label {
+  font-size: 0.95rem;
+  color: var(--gray-light);
+  line-height: 1.5;
+}
+
+.cost-source {
+  font-size: 0.75rem;
+  color: var(--gray-mid);
+  margin-top: 0.3rem;
+}
+
+.cost-total {
+  text-align: center;
+  padding: 1.75rem 0 0.5rem;
+}
+
+.cost-total .cost-figure {
+  font-size: 2.75rem;
+}
+
+.cost-total-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.gut-punch {
+  font-size: 1rem;
+  color: var(--gray-light);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* ── PROOF CARDS ── */
+.proof-bridge {
+  font-size: 0.95rem;
+  color: var(--gray-light);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.proof-section {
+  margin-bottom: 3rem;
+}
+
+.proof-section h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+
+.proof-card {
+  background: var(--navy-light);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--gold);
+}
+
+.proof-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.proof-title {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  margin-bottom: 0.5rem;
+}
+
+.proof-metric {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+}
+
+.proof-quote {
+  font-size: 0.9rem;
+  color: var(--gray-light);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* ── CTA SECTION ── */
+.cta-section {
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+.cta-transition {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 1.75rem;
+  line-height: 1.4;
+}
+
+.cta-primary {
+  display: block;
+  width: 100%;
+  padding: 1.2rem 2rem;
+  background: var(--gold);
+  color: var(--navy-dark);
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 0.4rem;
+  transition: background 0.2s;
+}
+
+.cta-primary:hover { background: var(--gold-hover); }
+
+.cta-subtext {
+  font-size: 0.85rem;
+  color: var(--gray-mid);
+  margin-bottom: 1.5rem;
+}
+
+.cta-secondary {
+  display: block;
+  width: 100%;
+  padding: 1rem 2rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 0.4rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.cta-secondary:hover {
+  border-color: var(--gold);
+  background: rgba(206, 164, 44, 0.08);
+}
+
+.share-form {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--navy-light);
+  border-radius: 12px;
+}
+
+.share-form h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+}
+
+.share-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.share-row input {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: var(--navy);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.share-row input:focus { border-color: var(--gold); }
+
+.share-row button {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background: var(--gold);
+  color: var(--navy-dark);
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.share-sent {
+  display: none;
+  color: var(--gold);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 0;
+}
+
+.final-line {
+  font-size: 0.9rem;
+  color: var(--gray-mid);
+  margin-top: 2rem;
+  line-height: 1.5;
+}
+
+/* ── DIVIDER ── */
+.section-divider {
+  width: 48px;
+  height: 2px;
+  background: var(--gold);
+  margin: 0 auto 3rem;
+  opacity: 0.5;
+}
+
+/* ── VALIDATION ── */
+.input-error {
+  border-color: #E05555 !important;
+}
+
+.error-text {
+  color: #E05555;
+  font-size: 0.8rem;
+  margin-top: -0.4rem;
+}
+
+/* Animate cost numbers */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cost-results.visible .cost-card {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.cost-results.visible .cost-card:nth-child(2) { animation-delay: 0.2s; }
+.cost-results.visible .cost-total { animation: fadeInUp 0.5s ease 0.4s forwards; opacity: 0; }
+.cost-results.visible .gut-punch { animation: fadeInUp 0.5s ease 0.6s forwards; opacity: 0; }
+
+/* ── DRIFT SCALES ── */
+.drift-scales {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.scales-heading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+}
+
+.scale-row {
+  margin-bottom: 1.75rem;
+}
+
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.scale-label-left, .scale-label-right {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  font-weight: 500;
+}
+
+.scale-name {
+  font-size: 0.85rem;
+  color: var(--white);
+  font-weight: 600;
+}
+
+.scale-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.scale-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 4px;
+  width: 0%;
+  transition: width 1s ease-out;
+  background: var(--gold);
+  opacity: 0.6;
+}
+
+.scale-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  background: var(--gold);
+  border: 3px solid var(--navy);
+  border-radius: 50%;
+  left: 0%;
+  transition: left 1s ease-out;
+  box-shadow: 0 0 0 2px rgba(206, 164, 44, 0.3);
+}
+
+/* ── CHRIS VIDEO ── */
+.video-section {
+  margin-bottom: 3rem;
+}
+
+.video-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--navy-dark);
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.video-caption {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  margin-top: 0.75rem;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ INTRO ════════════ -->
+<div id="intro" class="screen active">
+  <img src="https://cdn.prod.website-files.com/6530054d8f0a88aa816fcc50/653025f2b97d2c5940bf1bd9_sightShiftLogo-rev.svg" alt="SightShift" style="width: 140px; margin: 0 auto 0.5rem; display: block; opacity: 0.9;">
+  <h1>Is your culture drifting?</h1>
+  <p class="subhead">9 questions. 3 minutes. Find out before it costs you.</p>
+  <div class="form-group">
+    <input type="text" id="firstName" placeholder="First name" autocomplete="given-name" required>
+    <input type="email" id="email" placeholder="Email address" autocomplete="email" required>
+  </div>
+  <button class="btn-primary" id="startBtn" onclick="startDiagnostic()">Start the Diagnostic</button>
+  <p class="fine-print">Your results are private. We'll send them to your inbox.</p>
+</div>
+
+<!-- ════════════ QUESTIONS ════════════ -->
+<div id="question-screen" class="screen">
+  <div>
+    <button class="back-btn" id="backBtn" onclick="goBack()" style="display:none;">&larr; Back</button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText"></p>
+  </div>
+  <div class="question-container" id="questionContainer"></div>
+</div>
+
+<!-- ════════════ RESULTS ════════════ -->
+<div id="results-screen">
+
+  <div class="results-section">
+    <p class="result-label">Where Your Culture Is Drifting</p>
+    <h2 class="result-headline" id="resultHeadline"></h2>
+    <p class="result-body" id="resultBody"></p>
+    <div class="result-signs" id="resultSigns"></div>
+
+    <div class="drift-scales" id="driftScales">
+      <h3 class="scales-heading">Your culture drift across three dimensions</h3>
+
+      <div class="scale-row">
+        <div class="scale-labels">
+          <span class="scale-label-left">Caring</span>
+          <span class="scale-name">Relationships</span>
+          <span class="scale-label-right">Bitter</span>
+        </div>
+        <div class="scale-track">
+          <div class="scale-fill" id="scaleFill-relational"></div>
+          <div class="scale-marker" id="scaleMarker-relational"></div>
+        </div>
+      </div>
+
+      <div class="scale-row">
+        <div class="scale-labels">
+          <span class="scale-label-left">Calm</span>
+          <span class="scale-name">Challenges</span>
+          <span class="scale-label-right">Angry</span>
+        </div>
+        <div class="scale-track">
+          <div class="scale-fill" id="scaleFill-challenge"></div>
+          <div class="scale-marker" id="scaleMarker-challenge"></div>
+        </div>
+      </div>
+
+      <div class="scale-row">
+        <div class="scale-labels">
+          <span class="scale-label-left">Sacrifice</span>
+          <span class="scale-name">Vision</span>
+          <span class="scale-label-right">Dread</span>
+        </div>
+        <div class="scale-track">
+          <div class="scale-fill" id="scaleFill-sacrifice"></div>
+          <div class="scale-marker" id="scaleMarker-sacrifice"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- COST RESULTS (auto-calculated from question data) -->
+  <div class="calc-section" id="calculator">
+    <h2>What this is costing you</h2>
+
+    <div class="cost-results" id="costResults">
+      <div class="cost-card">
+        <div class="cost-figure" id="cost1">$0</div>
+        <p class="cost-label">Communication breakdown alone is costing your organization approximately this much per year.</p>
+        <p class="cost-source">Based on SHRM workplace communication research</p>
+      </div>
+      <div class="cost-card">
+        <div class="cost-figure" id="cost2">$0</div>
+        <p class="cost-label">And when someone decides they've had enough? Replacing just one team member will cost approximately this much.</p>
+        <p class="cost-source">SHRM estimates replacement costs at 6-9 months of salary</p>
+      </div>
+      <div class="cost-total">
+        <p class="cost-total-label">Total estimated annual cost of this pattern:</p>
+        <div class="cost-figure" id="costTotal">$0</div>
+      </div>
+      <p class="gut-punch">This number grows every month you know about it and don't act.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- CHRIS VIDEO (uncomment and replace VIDEO_ID when video is recorded)
+  <div class="video-section">
+    <h2 class="video-heading">A message from Chris McAlister</h2>
+    <div class="video-container">
+      <iframe
+        id="chrisVideo"
+        src="about:blank"
+        data-src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1"
+        title="Chris McAlister — What your results mean"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p class="video-caption">Chris McAlister, Founder of SightShift</p>
+  </div>
+
+  <div class="section-divider"></div>
+  -->
+
+  <!-- PROOF -->
+  <div class="proof-section">
+    <p class="proof-bridge">You're not the first leader to face this. And you don't have to figure it out alone.</p>
+    <h2>Leaders like you already solved this.</h2>
+
+    <div class="proof-card">
+      <p class="proof-name">John Carter</p>
+      <p class="proof-title">President &amp; COO Emeritus, Nationwide Financial</p>
+      <p class="proof-metric">Led a division that added $20B in revenue</p>
+      <p class="proof-quote">"SightShift helped me see things I didn't even expect I needed to be thinking about."</p>
+    </div>
+
+    <div class="proof-card">
+      <p class="proof-name">Michael Nardella</p>
+      <p class="proof-title">Managing Partner, Nardella &amp; Nardella</p>
+      <p class="proof-metric">$2M in traceable ROI</p>
+      <p class="proof-quote">"I can trace over $2 million of legitimate ROI that would not have come in but for SightShift."</p>
+    </div>
+
+    <div class="proof-card">
+      <p class="proof-name">Owen Wyss</p>
+      <p class="proof-title">CFO, Miles-McClellan Construction</p>
+      <p class="proof-metric">Advanced 5 years in team communication</p>
+      <p class="proof-quote">"SightShift advanced us at least five years in our ability to communicate as a team."</p>
+    </div>
+
+    <div class="proof-card">
+      <p class="proof-name">Whitney Lewis</p>
+      <p class="proof-title">Founder, Movement on Main</p>
+      <p class="proof-metric">3x revenue growth</p>
+      <p class="proof-quote">"It has helped me face difficult situations that make a big difference in my business. We've tripled our revenue."</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- CTAs -->
+  <div class="cta-section">
+    <p class="cta-transition">This isn't permanent. But it won't fix&nbsp;itself.</p>
+
+    <a href="https://www.sightshift.com/schedule-a-call" class="cta-primary" target="_blank">Talk to SightShift</a>
+    <p class="cta-subtext">Find out what's driving this pattern and how to stop&nbsp;it.</p>
+
+    <a href="https://www.sightshift.com/ifq" class="cta-secondary" target="_blank">Go Deeper on Your Own</a>
+    <p class="cta-subtext">Take the IFQ&trade; in 15 minutes and find out what's driving this pattern.</p>
+
+    <div class="share-form" id="shareForm">
+      <h3>Know a leader who needs to see this?</h3>
+      <p class="cta-subtext" style="margin-bottom:0.75rem">Send them the diagnostic. It takes 3 minutes.</p>
+      <div class="share-row">
+        <input type="email" id="shareEmail" placeholder="Their email address">
+        <button onclick="sendShare()">Send</button>
+      </div>
+      <p class="share-sent" id="shareSent">Sent! They'll get a link to take it themselves.</p>
+    </div>
+
+    <p class="final-line">Not responsible for the whole organization?<br>Send this to whoever is. They need to see this number before it effects the whole team.</p>
+
+    <p style="text-align:center; margin-top: 2.5rem; opacity: 0.4;">
+      <img src="https://cdn.prod.website-files.com/6530054d8f0a88aa816fcc50/653025f2b97d2c5940bf1bd9_sightShiftLogo-rev.svg" alt="SightShift" style="width: 100px;">
+    </p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  QUESTIONS DATA
+// ══════════════════════════════════════
+const questions = [
+  // ── Scale 1: Relational Drift ──
+  {
+    scale: 'relational',
+    text: "You notice two people on your team who used to work well together are now barely talking. What goes through your head?",
+    answers: [
+      { text: "I need to get in front of this before it spreads.", score: 1 },
+      { text: "It'll work itself out. People go through phases.", score: 2 },
+      { text: "I wonder if it has something to do with me or a decision I made.", score: 3 },
+      { text: "I honestly don't have the bandwidth to deal with their interpersonal stuff right now.", score: 4 }
+    ]
+  },
+  {
+    scale: 'relational',
+    text: "In your last few one-on-ones, how honest do you think people were being with you?",
+    answers: [
+      { text: "Pretty honest. They'll tell me what's really going on.", score: 1 },
+      { text: "Mostly honest, but I think they filter the hard stuff.", score: 2 },
+      { text: "I get the feeling they tell me what I want to hear.", score: 3 },
+      { text: "I've stopped expecting candor. I just read between the lines.", score: 4 }
+    ]
+  },
+  {
+    scale: 'relational',
+    text: "A long-time team member hasn't been themselves lately. They're doing the work, but the energy is gone. What do you do?",
+    answers: [
+      { text: "I make time this week to sit down and ask what's going on.", score: 1 },
+      { text: "I keep an eye on it. If it continues another few weeks, I'll bring it up.", score: 2 },
+      { text: "I feel it, but I'm not sure how to bring it up without making it weird.", score: 3 },
+      { text: "As long as the work is getting done, it's not really my place.", score: 4 }
+    ]
+  },
+
+  // ── Scale 2: Challenge Drift ──
+  {
+    scale: 'challenge',
+    text: "A team member pushes back on a decision you've already made. Your honest first reaction is:",
+    answers: [
+      { text: "Good \u2014 I want to hear their perspective. I might be missing something.", score: 1 },
+      { text: "A little annoyed, but I'll hear them out.", score: 2 },
+      { text: "A flash of frustration. I've already thought this through.", score: 3 },
+      { text: "I'm thinking about how to end this conversation quickly.", score: 4 }
+    ]
+  },
+  {
+    scale: 'challenge',
+    text: "You just got news that a major initiative missed its target by a wide margin. The first thing you feel is:",
+    answers: [
+      { text: "Curious. I want to understand what happened before reacting.", score: 1 },
+      { text: "Disappointed, but already thinking about what to adjust.", score: 2 },
+      { text: "A tightness in my chest. I want to know whose fault this is.", score: 3 },
+      { text: "Tired. This keeps happening and I'm running out of patience.", score: 4 }
+    ]
+  },
+  {
+    scale: 'challenge',
+    text: "When you walk into a difficult meeting, what's your typical internal state?",
+    answers: [
+      { text: "Calm. I've prepared and I trust the process.", score: 1 },
+      { text: "A little tense, but I settle in once it starts.", score: 2 },
+      { text: "Bracing myself. I already know where this is going to go sideways.", score: 3 },
+      { text: "Already rehearsing my responses to what I don't want to hear.", score: 4 }
+    ]
+  },
+
+  // ── Scale 3: Sacrifice Drift ──
+  {
+    scale: 'sacrifice',
+    text: "On Sunday night, when you think about the week ahead, the first thing you feel is:",
+    answers: [
+      { text: "Energized. There's real momentum and I'm looking forward to it.", score: 1 },
+      { text: "Steady. It'll be a lot, but I'm ready.", score: 2 },
+      { text: "Heavy. I already feel the weight of everything I'm carrying.", score: 3 },
+      { text: "Nothing. I've stopped feeling much about it either way.", score: 4 }
+    ]
+  },
+  {
+    scale: 'sacrifice',
+    text: "Someone close to you asks, 'Is it worth it?' You think:",
+    answers: [
+      { text: "Absolutely. Even on the hard days, I know why I'm doing this.", score: 1 },
+      { text: "Most of the time, yes. But some days I'm not sure.", score: 2 },
+      { text: "I used to say yes without hesitating. Now I pause.", score: 3 },
+      { text: "I don't let myself go there. The honest answer scares me.", score: 4 }
+    ]
+  },
+  {
+    scale: 'sacrifice',
+    text: "Think about the thing you used to love most about leading. How often do you feel that now?",
+    answers: [
+      { text: "Regularly. That fire is still there.", score: 1 },
+      { text: "It comes and goes. Some weeks are better than others.", score: 2 },
+      { text: "Rarely. The day-to-day has buried it under a pile of problems.", score: 3 },
+      { text: "I can barely remember what it felt like.", score: 4 }
+    ]
+  },
+
+  // ── Organization Data (transition + 2 questions) ──
+  {
+    scale: 'data',
+    type: 'transition',
+    text: "Almost done. Two quick questions about your organization so we can calculate the cost of what you\u2019re experiencing."
+  },
+  {
+    scale: 'data',
+    type: 'teamSize',
+    text: "How many people are on your team?",
+    inputType: 'number',
+    placeholder: 'e.g. 25'
+  },
+  {
+    scale: 'data',
+    type: 'salary',
+    text: "What\u2019s the average salary on your team?",
+    inputType: 'select',
+    options: [
+      { label: "Under $50,000", value: 40000 },
+      { label: "$50,000 \u2013 $75,000", value: 62500 },
+      { label: "$75,000 \u2013 $100,000", value: 87500 },
+      { label: "$100,000 \u2013 $150,000", value: 125000 },
+      { label: "$150,000 \u2013 $200,000", value: 175000 },
+      { label: "Over $200,000", value: 225000 }
+    ]
+  }
+];
+
+// ══════════════════════════════════════
+//  RESULTS DATA
+// ══════════════════════════════════════
+const results = {
+  relational: {
+    headline: "The relationships around you are starting to shift.",
+    body: "Something is changing in how your team relates to each other \u2014 and to you. Conversations that used to flow now feel careful. The trust you built is quietly eroding, and you may not see it until someone leaves.",
+    signs: [
+      "There are conversations you\u2019ve been putting off.",
+      "Meetings that used to be productive now feel performative.",
+      "You\u2019ve started managing around certain people instead of through them."
+    ]
+  },
+  challenge: {
+    headline: "The pressure is starting to drive your decisions.",
+    body: "The challenges you face are no longer bringing out your best \u2014 they\u2019re wearing you down. You may not feel it yet, but your team can see it. The steadiness they used to count on is harder to find.",
+    signs: [
+      "Bad news hits different than it used to. You feel it in your chest before you think it through.",
+      "You\u2019re solving the same problems over and over, and your patience for it is running thin.",
+      "The gap between how you want to show up and how you actually show up is getting wider."
+    ]
+  },
+  sacrifice: {
+    headline: "The weight of this is heavier than you\u2019re admitting.",
+    body: "The vision that used to energize you is starting to feel like a burden you carry alone. Sunday nights feel different than they used to. The cost of leading is quietly compounding.",
+    signs: [
+      "You used to talk about the future with energy. Now you talk about it with obligation.",
+      "The people closest to you have noticed something you haven\u2019t said out loud yet.",
+      "You\u2019re still performing at a high level, but it\u2019s costing more than it used to."
+    ]
+  }
+};
+
+// ══════════════════════════════════════
+//  COST FRAMING DATA
+// ══════════════════════════════════════
+const costFraming = {
+  relational: {
+    cost1Label: "When trust erodes, communication breaks down \u2014 and the cost is measurable. Misalignment, rework, and guarded conversations are costing your organization approximately this much per year.",
+    cost2Label: "And when someone decides the culture isn\u2019t worth it anymore? Replacing just one team member will cost approximately this much.",
+    gutPunch: "Every week this goes unaddressed, the distance between your people grows."
+  },
+  challenge: {
+    cost1Label: "When pressure drives decisions instead of clarity, mistakes compound. Reactive leadership, delayed decisions, and unresolved conflict are costing your organization approximately this much per year.",
+    cost2Label: "And when your best people get tired of leading through chaos? Replacing just one of them will cost approximately this much.",
+    gutPunch: "This number grows every month the pressure stays in the driver\u2019s seat."
+  },
+  sacrifice: {
+    cost1Label: "When leaders burn out, everything downstream suffers. Lost momentum, disengaged teams, and declining culture are costing your organization approximately this much per year.",
+    cost2Label: "And when a leader who\u2019s been carrying too much finally walks away? Replacing them will cost approximately this much.",
+    gutPunch: "The longer you carry this alone, the more expensive it gets to fix."
+  }
+};
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let currentQ = 0;
+let scores = { relational: 0, challenge: 0, sacrifice: 0 };
+let userData = { firstName: '', email: '' };
+let answerHistory = [];
+let highestScale = 'relational';
+let orgData = { teamSize: 0, avgSalary: 0 };
+
+// ══════════════════════════════════════
+//  INTRO → QUESTIONS
+// ══════════════════════════════════════
+function startDiagnostic() {
+  const nameEl = document.getElementById('firstName');
+  const emailEl = document.getElementById('email');
+  const name = nameEl.value.trim();
+  const email = emailEl.value.trim();
+
+  // Clear previous errors
+  nameEl.classList.remove('input-error');
+  emailEl.classList.remove('input-error');
+
+  let valid = true;
+  if (!name) { nameEl.classList.add('input-error'); valid = false; }
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    emailEl.classList.add('input-error');
+    valid = false;
+  }
+  if (!valid) return;
+
+  userData = { firstName: name, email: email };
+
+  // Send to webhook (placeholder — swap for Kartra/real endpoint)
+  try {
+    const payload = { firstName: name, email: email, source: 'validation-check', timestamp: new Date().toISOString() };
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('REPLACE_WITH_ZAP1_WEBHOOK_URL', JSON.stringify(payload));
+    }
+  } catch(e) { /* silent fail for v1 */ }
+
+  document.getElementById('intro').classList.remove('active');
+  document.getElementById('question-screen').classList.add('active');
+  buildQuestions();
+  showQuestion(0);
+}
+
+// ══════════════════════════════════════
+//  QUESTIONS
+// ══════════════════════════════════════
+function buildQuestions() {
+  const container = document.getElementById('questionContainer');
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'q' + i;
+
+    if (q.type === 'transition') {
+      // Transition slide — just text and a continue button
+      card.innerHTML = `
+        <p class="question-text">${q.text}</p>
+        <button class="btn-primary" onclick="advanceFromTransition(${i})" style="margin-top: 1.5rem;">Continue</button>
+      `;
+    } else if (q.type === 'teamSize') {
+      card.innerHTML = `
+        <p class="question-text">${q.text}</p>
+        <div class="calc-field" style="margin-top: 1.25rem;">
+          <input type="number" id="qTeamSize" min="1" max="10000"
+                 placeholder="${q.placeholder}" inputmode="numeric"
+                 class="data-input">
+        </div>
+        <button class="btn-primary" onclick="submitTeamSize(${i})" style="margin-top: 1.25rem;">Next</button>
+      `;
+    } else if (q.type === 'salary') {
+      card.innerHTML = `
+        <p class="question-text">${q.text}</p>
+        <div class="calc-field" style="margin-top: 1.25rem;">
+          <select id="qAvgSalary" class="data-input">
+            <option value="" disabled selected>Select a range</option>
+            ${q.options.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+          </select>
+        </div>
+        <button class="btn-primary" onclick="submitSalary(${i})" style="margin-top: 1.25rem;">See My Results</button>
+      `;
+    } else {
+      // Standard multiple-choice question
+      const shuffled = q.answers.map((a, idx) => ({ ...a, origIdx: idx }));
+      for (let j = shuffled.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [shuffled[j], shuffled[k]] = [shuffled[k], shuffled[j]];
+      }
+      card.innerHTML = `
+        <p class="question-text">${q.text}</p>
+        <div class="answer-options">
+          ${shuffled.map((a, ai) => `
+            <button class="answer-btn" onclick="selectAnswer(${i}, '${q.scale}', ${a.score}, this)">${a.text}</button>
+          `).join('')}
+        </div>
+      `;
+    }
+    container.appendChild(card);
+  });
+}
+
+function showQuestion(idx) {
+  currentQ = idx;
+  const fill = ((idx) / questions.length) * 100;
+  document.getElementById('progressFill').style.width = fill + '%';
+
+  const displayNum = Math.min(idx + 1, 9);
+  document.getElementById('progressText').textContent = displayNum + ' of 9';
+
+  const isDataSlide = questions[idx] && questions[idx].scale === 'data';
+  document.querySelector('.progress-bar').style.opacity = isDataSlide ? '0' : '1';
+  document.getElementById('progressText').style.opacity = isDataSlide ? '0' : '1';
+
+  document.getElementById('backBtn').style.display = idx > 0 ? 'block' : 'none';
+
+  document.querySelectorAll('.question-card').forEach((card, i) => {
+    card.classList.remove('active', 'exit-left');
+    if (i < idx) card.classList.add('exit-left');
+    if (i === idx) card.classList.add('active');
+  });
+}
+
+function selectAnswer(qIdx, scale, score, btn) {
+  // Visual feedback
+  btn.closest('.answer-options').querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // If re-answering a question we went back to, reverse the old answer first
+  if (answerHistory[qIdx]) {
+    scores[answerHistory[qIdx].scale] -= answerHistory[qIdx].score;
+  }
+
+  scores[scale] += score;
+  answerHistory[qIdx] = { scale, score };
+
+  // Auto-advance after brief delay
+  setTimeout(() => {
+    showQuestion(qIdx + 1);
+  }, 300);
+}
+
+function advanceFromTransition(qIdx) {
+  if (qIdx < questions.length - 1) {
+    showQuestion(qIdx + 1);
+  }
+}
+
+function submitTeamSize(qIdx) {
+  const val = parseInt(document.getElementById('qTeamSize').value);
+  if (!val || val < 1) {
+    document.getElementById('qTeamSize').classList.add('input-error');
+    return;
+  }
+  document.getElementById('qTeamSize').classList.remove('input-error');
+  orgData.teamSize = val;
+  answerHistory[qIdx] = { scale: 'data', score: 0 };
+  showQuestion(qIdx + 1);
+}
+
+function submitSalary(qIdx) {
+  const val = parseInt(document.getElementById('qAvgSalary').value);
+  if (!val) {
+    document.getElementById('qAvgSalary').classList.add('input-error');
+    return;
+  }
+  document.getElementById('qAvgSalary').classList.remove('input-error');
+  orgData.avgSalary = val;
+  answerHistory[qIdx] = { scale: 'data', score: 0 };
+  showResults();
+}
+
+function goBack() {
+  if (currentQ > 0) {
+    showQuestion(currentQ - 1);
+  }
+}
+
+// ══════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════
+function showResults() {
+  document.getElementById('question-screen').classList.remove('active');
+  document.getElementById('results-screen').classList.add('active');
+
+  // Find highest scale (randomize tiebreaker so ties don't always default to relational)
+  const scaleNames = ['relational', 'challenge', 'sacrifice'];
+  const scaleScores = scaleNames.map(s => ({ name: s, score: scores[s] }));
+
+  // Shuffle before sorting so equal scores get random order
+  for (let i = scaleScores.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [scaleScores[i], scaleScores[j]] = [scaleScores[j], scaleScores[i]];
+  }
+
+  // Sort descending by score (stable sort preserves random order for ties)
+  scaleScores.sort((a, b) => b.score - a.score);
+  let highest = scaleScores[0].name;
+
+  console.log('Scores:', JSON.stringify(scores), '\u2192 Result:', highest);
+
+  highestScale = highest;
+
+  const r = results[highest];
+  document.getElementById('resultHeadline').textContent = r.headline;
+  document.getElementById('resultBody').textContent = r.body;
+
+  const signsHtml = r.signs.map(s => `<p class="sign-line">${s}</p>`).join('');
+  document.getElementById('resultSigns').innerHTML = signsHtml;
+
+  // Animate drift scales
+  setTimeout(() => {
+    const scaleData = [
+      { key: 'relational', score: scores.relational },
+      { key: 'challenge', score: scores.challenge },
+      { key: 'sacrifice', score: scores.sacrifice }
+    ];
+
+    scaleData.forEach((s, i) => {
+      const pct = Math.round(((s.score - 3) / 9) * 100);
+      const clampedPct = Math.max(5, Math.min(95, pct));
+
+      setTimeout(() => {
+        document.getElementById('scaleFill-' + s.key).style.width = clampedPct + '%';
+        document.getElementById('scaleMarker-' + s.key).style.left = clampedPct + '%';
+      }, i * 200);
+    });
+  }, 400);
+
+  // Lazy-load Chris video (if uncommented)
+  const videoFrame = document.getElementById('chrisVideo');
+  if (videoFrame && videoFrame.dataset.src) {
+    videoFrame.src = videoFrame.dataset.src;
+  }
+
+  // Auto-calculate cost from org data collected during questions
+  if (orgData.teamSize && orgData.avgSalary) {
+    const commCost = orgData.teamSize * 12506;
+    const replaceCost = Math.round(orgData.avgSalary * 0.75);
+    const total = commCost + replaceCost;
+
+    const framing = costFraming[highestScale];
+    document.querySelector('#costResults .cost-card:nth-child(1) .cost-label').textContent = framing.cost1Label;
+    document.querySelector('#costResults .cost-card:nth-child(2) .cost-label').textContent = framing.cost2Label;
+    document.querySelector('.gut-punch').textContent = framing.gutPunch;
+
+    // Short delay then animate the numbers
+    setTimeout(() => {
+      animateCount('cost1', commCost);
+      animateCount('cost2', replaceCost);
+      setTimeout(() => {
+        animateCount('costTotal', total);
+      }, 400);
+      document.getElementById('costResults').classList.add('visible');
+    }, 500);
+  }
+
+  // Send diagnostic results to webhook (enriches existing Kartra lead)
+  try {
+    const resultsPayload = {
+      email: userData.email,
+      firstName: userData.firstName,
+      entryPath: userData.email === 'captured-on-landing-page' ? 'landing-page' : 'direct',
+      highestDrift: highestScale,
+      relationalScore: scores.relational,
+      challengeScore: scores.challenge,
+      sacrificeScore: scores.sacrifice,
+      teamSize: orgData.teamSize,
+      avgSalary: orgData.avgSalary,
+      costTotal: orgData.teamSize * 12506 + Math.round(orgData.avgSalary * 0.75),
+      source: 'validation-check-results',
+      timestamp: new Date().toISOString()
+    };
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('REPLACE_WITH_ZAP2_WEBHOOK_URL', JSON.stringify(resultsPayload));
+    }
+  } catch(e) {}
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// ══════════════════════════════════════
+//  COST ANIMATION
+// ══════════════════════════════════════
+function animateCount(elId, target) {
+  const el = document.getElementById(elId);
+  const duration = 1200;
+  const start = performance.now();
+
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(eased * target);
+    el.textContent = '$' + current.toLocaleString();
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ══════════════════════════════════════
+//  SHARE
+// ══════════════════════════════════════
+function sendShare() {
+  const emailEl = document.getElementById('shareEmail');
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) return;
+
+  // Webhook placeholder
+  try {
+    const payload = {
+      referrerName: userData.firstName,
+      referrerEmail: userData.email,
+      recipientEmail: email,
+      source: 'validation-check-share',
+      timestamp: new Date().toISOString()
+    };
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('REPLACE_WITH_ZAP3_WEBHOOK_URL', JSON.stringify(payload));
+    }
+  } catch(e) {}
+
+  document.getElementById('shareSent').style.display = 'block';
+  emailEl.value = '';
+}
+
+// Allow Enter key on intro form
+document.getElementById('email').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startDiagnostic();
+});
+document.getElementById('firstName').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('email').focus();
+});
+
+// ══════════════════════════════════════
+//  URL PARAMETER ENTRY (from landing page redirect)
+// ══════════════════════════════════════
+(function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const nameFromUrl = urlParams.get('name');
+
+  if (nameFromUrl) {
+    // User came from the landing page — email already captured in Kartra
+    userData.firstName = decodeURIComponent(nameFromUrl);
+    userData.email = 'captured-on-landing-page';
+
+    // Skip intro screen, go straight to questions
+    document.getElementById('intro').classList.remove('active');
+    document.getElementById('question-screen').classList.add('active');
+    buildQuestions();
+    showQuestion(0);
+  }
+})();
+</script>
+
+</body>
+</html>
