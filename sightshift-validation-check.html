@@ -1217,7 +1217,7 @@ function startDiagnostic() {
   try {
     const payload = { firstName: name, email: email, source: 'validation-check', timestamp: new Date().toISOString() };
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('REPLACE_WITH_ZAP1_WEBHOOK_URL', JSON.stringify(payload));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsowxp/', JSON.stringify(payload));
     }
   } catch(e) { /* silent fail for v1 */ }
 
@@ -1439,7 +1439,7 @@ function showResults() {
     }, 500);
   }
 
-  // Send diagnostic results to webhook (enriches existing Kartra lead)
+  // Send diagnostic results to Zapier webhook (enriches existing Kartra lead)
   try {
     const resultsPayload = {
       email: userData.email,
@@ -1456,7 +1456,7 @@ function showResults() {
       timestamp: new Date().toISOString()
     };
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('REPLACE_WITH_ZAP2_WEBHOOK_URL', JSON.stringify(resultsPayload));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsufjv/', JSON.stringify(resultsPayload));
     }
   } catch(e) {}
 
@@ -1501,7 +1501,7 @@ function sendShare() {
       timestamp: new Date().toISOString()
     };
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('REPLACE_WITH_ZAP3_WEBHOOK_URL', JSON.stringify(payload));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsd1j1/', JSON.stringify(payload));
     }
   } catch(e) {}
 
