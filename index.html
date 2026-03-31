@@ -1217,7 +1217,7 @@ function startDiagnostic() {
   try {
     const payload = { firstName: name, email: email, source: 'validation-check', timestamp: new Date().toISOString() };
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsowxp/', JSON.stringify(payload));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsowxp/', new Blob([JSON.stringify(payload)], {type: 'application/json'}));
     }
   } catch(e) { /* silent fail for v1 */ }
 
@@ -1456,7 +1456,7 @@ function showResults() {
       timestamp: new Date().toISOString()
     };
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsufjv/', JSON.stringify(resultsPayload));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsufjv/', new Blob([JSON.stringify(resultsPayload)], {type: 'application/json'}));
     }
   } catch(e) {}
 
@@ -1501,7 +1501,7 @@ function sendShare() {
       timestamp: new Date().toISOString()
     };
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsd1j1/', JSON.stringify(payload));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsd1j1/', new Blob([JSON.stringify(payload)], {type: 'application/json'}));
     }
   } catch(e) {}
 
