@@ -1215,9 +1215,9 @@ function startDiagnostic() {
 
   // Send to webhook (placeholder — swap for Kartra/real endpoint)
   try {
-    const payload = { firstName: name, email: email, source: 'validation-check', timestamp: new Date().toISOString() };
+    const payload = new URLSearchParams({ firstName: name, email: email, source: 'validation-check', timestamp: new Date().toISOString() });
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsowxp/', new Blob([JSON.stringify(payload)], {type: 'application/json'}));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsowxp/', payload);
     }
   } catch(e) { /* silent fail for v1 */ }
 
@@ -1441,22 +1441,22 @@ function showResults() {
 
   // Send diagnostic results to Zapier webhook (enriches existing Kartra lead)
   try {
-    const resultsPayload = {
+    const resultsPayload = new URLSearchParams({
       email: userData.email,
       firstName: userData.firstName,
       entryPath: userData.email === 'captured-on-landing-page' ? 'landing-page' : 'direct',
       highestDrift: highestScale,
-      relationalScore: scores.relational,
-      challengeScore: scores.challenge,
-      sacrificeScore: scores.sacrifice,
-      teamSize: orgData.teamSize,
-      avgSalary: orgData.avgSalary,
-      costTotal: orgData.teamSize * 12506 + Math.round(orgData.avgSalary * 0.75),
+      relationalScore: String(scores.relational),
+      challengeScore: String(scores.challenge),
+      sacrificeScore: String(scores.sacrifice),
+      teamSize: String(orgData.teamSize),
+      avgSalary: String(orgData.avgSalary),
+      costTotal: String(orgData.teamSize * 12506 + Math.round(orgData.avgSalary * 0.75)),
       source: 'validation-check-results',
       timestamp: new Date().toISOString()
-    };
+    });
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsufjv/', new Blob([JSON.stringify(resultsPayload)], {type: 'application/json'}));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsufjv/', resultsPayload);
     }
   } catch(e) {}
 
@@ -1493,15 +1493,15 @@ function sendShare() {
 
   // Webhook placeholder
   try {
-    const payload = {
+    const payload = new URLSearchParams({
       referrerName: userData.firstName,
       referrerEmail: userData.email,
       recipientEmail: email,
       source: 'validation-check-share',
       timestamp: new Date().toISOString()
-    };
+    });
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsd1j1/', new Blob([JSON.stringify(payload)], {type: 'application/json'}));
+      navigator.sendBeacon('https://hooks.zapier.com/hooks/catch/5513407/unsd1j1/', payload);
     }
   } catch(e) {}
 
