@@ -1535,11 +1535,12 @@ document.getElementById('firstName').addEventListener('keydown', function(e) {
 (function() {
   const urlParams = new URLSearchParams(window.location.search);
   const nameFromUrl = urlParams.get('name');
+  const emailFromUrl = urlParams.get('email');
 
   if (nameFromUrl) {
-    // User came from the landing page — email already captured in Kartra
+    // User came from the landing page — name and email passed via URL
     userData.firstName = decodeURIComponent(nameFromUrl);
-    userData.email = 'captured-on-landing-page';
+    userData.email = emailFromUrl ? decodeURIComponent(emailFromUrl) : 'captured-on-landing-page';
 
     // Skip intro screen, go straight to questions
     document.getElementById('intro').classList.remove('active');
